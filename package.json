@@ -1,0 +1,10 @@
+{
+  "name": "hackconnect-monorepo",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"pnpm --filter frontend dev\" \"pnpm --filter backend dev\""
+  },
+  "devDependencies": {
+    "concurrently": "8.2.0"
+  }
+}
