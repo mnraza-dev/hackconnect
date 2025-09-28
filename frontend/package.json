@@ -12,13 +12,29 @@
   "dependencies": {
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "next": "15.5.4"
+    "next": "15.5.4",
+    "next-auth": "^4.24.5",
+    "socket.io-client": "^4.7.4",
+    "axios": "^1.6.2",
+    "react-hook-form": "^7.48.2",
+    "react-query": "^3.39.3",
+    "react-hot-toast": "^2.4.1",
+    "lucide-react": "^0.294.0",
+    "date-fns": "^2.30.0",
+    "react-markdown": "^9.0.1",
+    "react-syntax-highlighter": "^15.5.0",
+    "@headlessui/react": "^1.7.17",
+    "@heroicons/react": "^2.0.18",
+    "framer-motion": "^10.16.16",
+    "react-map-gl": "^7.1.7",
+    "mapbox-gl": "^2.15.0"
   },
   "devDependencies": {
     "typescript": "^5",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/react-syntax-highlighter": "^15.5.11",
     "@tailwindcss/postcss": "^4",
     "tailwindcss": "^4",
     "@biomejs/biome": "2.2.0"
