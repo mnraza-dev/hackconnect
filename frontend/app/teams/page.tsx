@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { HeroHeader } from '@/components/header';
 import { Users, Plus, Search, Filter, MapPin, Calendar, User, MessageCircle } from 'lucide-react';
 
 interface Team {
@@ -38,6 +39,7 @@ const TeamsPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterSkills, setFilterSkills] = useState<string[]>([]);
   const [availableSkills, setAvailableSkills] = useState<string[]>([]);
+  const [statusFilter, setStatusFilter] = useState<'all' | 'open' | 'full'>('all');
 
   useEffect(() => {
     fetchTeams();
@@ -121,7 +123,13 @@ const TeamsPage = () => {
                          team.event.title.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesSkills = filterSkills.length === 0 || 
                          filterSkills.some(skill => team.skillsNeeded.includes(skill));
-    return matchesSearch && matchesSkills && team.isOpen;
+    const isTeamOpen = team.members.length < team.maxMembers && team.isOpen;
+    const matchesStatus = statusFilter === 'all' 
+      ? true 
+      : statusFilter === 'open' 
+        ? isTeamOpen 
+        : !isTeamOpen;
+    return matchesSearch && matchesSkills && matchesStatus;
   });
 
   const formatDate = (dateString: string) => {
@@ -142,45 +150,42 @@ const TeamsPage = () => {
     );
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading teams...</p>
+  const LoadingSkeleton = () => (
+    <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+      <div className="p-6 animate-pulse">
+        <div className="flex items-start justify-between mb-4">
+          <div className="h-6 bg-gray-200 rounded w-1/2" />
+          <div className="flex space-x-2">
+            <div className="h-5 w-16 bg-gray-200 rounded-full" />
+            <div className="h-5 w-12 bg-gray-200 rounded-full" />
+          </div>
+        </div>
+        <div className="space-y-2 mb-4">
+          <div className="h-4 bg-gray-200 rounded w-full" />
+          <div className="h-4 bg-gray-200 rounded w-5/6" />
+          <div className="h-4 bg-gray-200 rounded w-2/3" />
+        </div>
+        <div className="space-y-2 mb-4">
+          <div className="h-4 bg-gray-200 rounded w-1/3" />
+          <div className="h-4 bg-gray-200 rounded w-1/4" />
+        </div>
+        <div className="flex items-center justify-between">
+          <div className="h-6 w-32 bg-gray-200 rounded" />
+          <div className="flex space-x-2">
+            <div className="h-8 w-20 bg-gray-200 rounded" />
+            <div className="h-8 w-8 bg-gray-200 rounded" />
+          </div>
         </div>
       </div>
-    );
-  }
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Navigation */}
-      <nav className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
-            <div className="flex items-center">
-              <Link href="/" className="text-2xl font-bold text-indigo-600">
-                HackConnect
-              </Link>
-            </div>
-            <div className="flex items-center space-x-4">
-              <Link href="/dashboard" className="text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium">
-                Dashboard
-              </Link>
-              <Link href="/events" className="text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium">
-                Events
-              </Link>
-              <Link href="/messages" className="text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium">
-                Messages
-              </Link>
-            </div>
-          </div>
-        </div>
-      </nav>
+      <HeroHeader />
 
       {/* Hero Section */}
-      <div className="bg-indigo-600 py-16">
+      <div className="bg-gradient-to-b from-indigo-600 to-indigo-700 pt-28 pb-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-4xl font-bold text-white mb-4">
@@ -191,7 +196,7 @@ const TeamsPage = () => {
             </p>
             <Link
               href="/teams/create"
-              className="bg-white text-indigo-600 px-6 py-3 rounded-lg font-medium hover:bg-gray-100 transition-colors inline-flex items-center"
+              className="bg-white text-indigo-700 px-6 py-3 rounded-lg font-medium hover:bg-gray-100 transition-colors inline-flex items-center shadow"
             >
               <Plus className="h-5 w-5 mr-2" />
               Create Team
@@ -217,10 +222,14 @@ const TeamsPage = () => {
             
             <div className="relative">
               <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <select className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
-                <option>All Teams</option>
-                <option>Looking for Members</option>
-                <option>Full Teams</option>
+              <select 
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value as 'all' | 'open' | 'full')}
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              >
+                <option value="all">All Teams</option>
+                <option value="open">Looking for Members</option>
+                <option value="full">Full Teams</option>
               </select>
             </div>
 
@@ -228,6 +237,7 @@ const TeamsPage = () => {
               onClick={() => {
                 setSearchTerm('');
                 setFilterSkills([]);
+                setStatusFilter('all');
               }}
               className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
             >
@@ -265,7 +275,9 @@ const TeamsPage = () => {
 
         {/* Teams Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredTeams.length === 0 ? (
+          {loading ? (
+            Array.from({ length: 6 }).map((_, i) => <LoadingSkeleton key={i} />)
+          ) : filteredTeams.length === 0 ? (
             <div className="col-span-full text-center py-12">
               <Users className="mx-auto h-12 w-12 text-gray-400" />
               <h3 className="mt-2 text-sm font-medium text-gray-900">No teams found</h3>
